@@ -1,0 +1,2 @@
+# Run all three servers for the Human Detection Project
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot\rtsp'; .\mediamtx.exe" -WindowStyle Normal; Start-Sleep -Seconds 2; Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot\Prototype'; node server.js" -WindowStyle Normal; Start-Sleep -Seconds 2; Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$PSScriptRoot\Prototype'; python yolo_analyzer.py" -WindowStyle Normal

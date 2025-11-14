@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Human detection project</title>
+    <!-- Load Tailwind CSS for modern, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter font -->
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #111827; /* Dark background */
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen p-4 md:p-8 flex flex-col items-center justify-center"
+  >
+    <!-- Alert Notification Banner -->
+    <div
+      id="alert-banner"
+      class="fixed top-4 right-4 z-50 bg-red-600 text-white px-6 py-4 rounded-lg shadow-2xl transform translate-x-full transition-transform duration-300 flex items-center gap-3"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+        />
+      </svg>
+      <div>
+        <p class="font-bold text-lg">⚠️ New Person Detected!</p>
+        <p id="alert-details" class="text-sm opacity-90"></p>
+      </div>
+    </div>
+
+    <div
+      class="w-full max-w-7xl bg-gray-900 rounded-2xl shadow-2xl p-4 md:p-8 space-y-6"
+    >
+      <header class="text-center">
+        <h1 class="text-4xl font-extrabold text-white mb-1">
+          Live Human Detection System
+        </h1>
+        <p class="text-gray-400 text-lg">
+          Real-time person detection and tracking
+        </p>
+      </header>
+
+      <!-- Current Metadata Display Panel -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-white">
+        <!-- Current Total Count Card -->
+        <div
+          class="bg-blue-700 p-4 rounded-xl shadow-xl flex flex-col justify-center items-center h-full transform transition hover:scale-[1.02]"
+        >
+          <p class="text-sm font-medium opacity-80 uppercase tracking-wider">
+            Current People
+          </p>
+          <p
+            id="pothole-count"
+            class="text-4xl md:text-5xl font-extrabold mt-1"
+          >
+            0
+          </p>
+        </div>
+
+        <!-- Current Large Count Card -->
+        <div
+          class="bg-red-700 p-4 rounded-xl shadow-xl flex flex-col justify-center items-center h-full transform transition hover:scale-[1.02]"
+        >
+          <p class="text-sm font-medium opacity-80 uppercase tracking-wider">
+            Large (Close)
+          </p>
+          <p id="severe-count" class="text-4xl md:text-5xl font-extrabold mt-1">
+            0
+          </p>
+        </div>
+
+        <!-- Current Medium Count Card -->
+        <div
+          class="bg-yellow-600 p-4 rounded-xl shadow-xl flex flex-col justify-center items-center h-full transform transition hover:scale-[1.02]"
+        >
+          <p class="text-sm font-medium opacity-80 uppercase tracking-wider">
+            Medium
+          </p>
+          <p id="medium-count" class="text-4xl md:text-5xl font-extrabold mt-1">
+            0
+          </p>
+        </div>
+
+        <!-- Current Small Count Card -->
+        <div
+          class="bg-green-600 p-4 rounded-xl shadow-xl flex flex-col justify-center items-center h-full transform transition hover:scale-[1.02]"
+        >
+          <p class="text-sm font-medium opacity-80 uppercase tracking-wider">
+            Small (Far)
+          </p>
+          <p id="low-count" class="text-4xl md:text-5xl font-extrabold mt-1">
+            0
+          </p>
+        </div>
+      </div>
+
+      <!-- Cumulative Metadata Display Panel -->
+      <h2 class="text-2xl font-bold text-white text-center mt-8 mb-4">
+        Cumulative Counts (Total Unique)
+      </h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-white">
+        <!-- Cumulative Total Count Card -->
+        <div
+          class="bg-blue-700 p-4 rounded-xl shadow-xl flex flex-col justify-center items-center h-full transform transition hover:scale-[1.02]"
+        >
+          <p class="text-sm font-medium opacity-80 uppercase tracking-wider">
+            Total People Tracked
+          </p>
+          <p
+            id="cumulative-pothole-count"
+            class="text-4xl md:text-5xl font-extrabold mt-1"
+          >
+            0
+          </p>
+        </div>
+
+        <!-- Cumulative Large Count Card -->
+        <div
+          class="bg-red-700 p-4 rounded-xl shadow-xl flex flex-col justify-center items-center h-full transform transition hover:scale-[1.02]"
+        >
+          <p class="text-sm font-medium opacity-80 uppercase tracking-wider">
+            Large (Close)
+          </p>
+          <p
+            id="cumulative-severe-count"
+            class="text-4xl md:text-5xl font-extrabold mt-1"
+          >
+            0
+          </p>
+        </div>
+
+        <!-- Cumulative Medium Count Card -->
+        <div
+          class="bg-yellow-600 p-4 rounded-xl shadow-xl flex flex-col justify-center items-center h-full transform transition hover:scale-[1.02]"
+        >
+          <p class="text-sm font-medium opacity-80 uppercase tracking-wider">
+            Medium
+          </p>
+          <p
+            id="cumulative-medium-count"
+            class="text-4xl md:text-5xl font-extrabold mt-1"
+          >
+            0
+          </p>
+        </div>
+
+        <!-- Cumulative Small Count Card -->
+        <div
+          class="bg-green-600 p-4 rounded-xl shadow-xl flex flex-col justify-center items-center h-full transform transition hover:scale-[1.02]"
+        >
+          <p class="text-sm font-medium opacity-80 uppercase tracking-wider">
+            Small (Far)
+          </p>
+          <p
+            id="cumulative-low-count"
+            class="text-4xl md:text-5xl font-extrabold mt-1"
+          >
+            0
+          </p>
+        </div>
+      </div>
+
+      <!-- Video Feed Container -->
+      <div
+        class="relative w-full rounded-xl overflow-hidden shadow-2xl border-4 border-gray-700 bg-black"
+      >
+        <img
+          id="video-feed"
+          class="w-full object-contain"
+          style="aspect-ratio: 16/9"
+          alt="Live stream will appear here."
+          src="https://placehold.co/1280x720/1f2937/FFFFFF?text=Waiting+for+Detection+System"
+        />
+
+        <!-- Status Overlay -->
+        <div
+          id="status-overlay"
+          class="absolute inset-0 bg-black bg-opacity-80 text-white text-xl md:text-3xl font-bold flex items-center justify-center transition-opacity duration-300 pointer-events-none"
+        >
+          Connecting to Node Server...
+        </div>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const videoFeed = document.getElementById("video-feed");
+      const potholeCountEl = document.getElementById("pothole-count");
+      const lowCountEl = document.getElementById("low-count");
+      const mediumCountEl = document.getElementById("medium-count");
+      const severeCountEl = document.getElementById("severe-count");
+      const cumulativePotholeCountEl = document.getElementById(
+        "cumulative-pothole-count"
+      );
+      const cumulativeLowCountEl = document.getElementById(
+        "cumulative-low-count"
+      );
+      const cumulativeMediumCountEl = document.getElementById(
+        "cumulative-medium-count"
+      );
+      const cumulativeSevereCountEl = document.getElementById(
+        "cumulative-severe-count"
+      );
+      const statusOverlay = document.getElementById("status-overlay");
+      const alertBanner = document.getElementById("alert-banner");
+      const alertDetails = document.getElementById("alert-details");
+
+      let sizeSummary = { Small: 0, Medium: 0, Large: 0 };
+      let cumulativeSummary = { Small: 0, Medium: 0, Large: 0 };
+
+      // Alert notification function
+      function showAlert(category, area) {
+        alertDetails.textContent = `Category: ${category} | Area: ${area}px²`;
+
+        // Slide in the banner
+        alertBanner.classList.remove("translate-x-full");
+        alertBanner.classList.add("translate-x-0");
+
+        // Play browser notification sound if supported
+        try {
+          const audio = new Audio(
+            "data:audio/wav;base64,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"
+          );
+          audio.play();
+        } catch (e) {
+          console.log("Audio alert not available");
+        }
+
+        // Hide after 3 seconds
+        setTimeout(() => {
+          alertBanner.classList.remove("translate-x-0");
+          alertBanner.classList.add("translate-x-full");
+        }, 3000);
+      }
+
+      function updateSummary() {
+        lowCountEl.textContent = sizeSummary.Small;
+        mediumCountEl.textContent = sizeSummary.Medium;
+        severeCountEl.textContent = sizeSummary.Large;
+        potholeCountEl.textContent =
+          sizeSummary.Small + sizeSummary.Medium + sizeSummary.Large;
+      }
+
+      function updateCumulativeSummary() {
+        cumulativeLowCountEl.textContent = cumulativeSummary.Small;
+        cumulativeMediumCountEl.textContent = cumulativeSummary.Medium;
+        cumulativeSevereCountEl.textContent = cumulativeSummary.Large;
+        cumulativePotholeCountEl.textContent =
+          cumulativeSummary.Small +
+          cumulativeSummary.Medium +
+          cumulativeSummary.Large;
+      }
+
+      function showStatus(message, isError = false) {
+        statusOverlay.textContent = message;
+        statusOverlay.classList.remove("opacity-0", "pointer-events-none");
+        statusOverlay.classList.toggle("bg-red-800", isError);
+        statusOverlay.classList.toggle("bg-opacity-80", !isError);
+      }
+
+      socket.on("detection_data", (data) => {
+        // 1. Update video feed
+        if (data.frame) {
+          videoFeed.src = `data:image/jpeg;base64,${data.frame}`;
+          statusOverlay.classList.add("opacity-0", "pointer-events-none");
+        }
+
+        // 2. Update current metadata displays
+        if (data.metadata && Array.isArray(data.metadata.details)) {
+          sizeSummary.Small = 0;
+          sizeSummary.Medium = 0;
+          sizeSummary.Large = 0;
+
+          data.metadata.details.forEach((person) => {
+            if (person.category === "Small") {
+              sizeSummary.Small++;
+            } else if (person.category === "Medium") {
+              sizeSummary.Medium++;
+            } else if (person.category === "Large") {
+              sizeSummary.Large++;
+            }
+          });
+
+          updateSummary();
+        } else {
+          sizeSummary = { Small: 0, Medium: 0, Large: 0 };
+          updateSummary();
+        }
+
+        // 3. Update cumulative metadata displays
+        if (data.metadata && data.metadata.cumulative) {
+          cumulativeSummary.Small = data.metadata.cumulative.Small;
+          cumulativeSummary.Medium = data.metadata.cumulative.Medium;
+          cumulativeSummary.Large = data.metadata.cumulative.Large;
+          updateCumulativeSummary();
+        }
+      });
+
+      socket.on("connect", () => {
+        showStatus(
+          "Connected to Server. Waiting for Python Analyzer...",
+          false
+        );
+      });
+
+      socket.on("disconnect", () => {
+        showStatus(
+          "Disconnected from server. Check Node/Python scripts.",
+          true
+        );
+        potholeCountEl.textContent = "---";
+        lowCountEl.textContent = "---";
+        mediumCountEl.textContent = "---";
+        severeCountEl.textContent = "---";
+        cumulativePotholeCountEl.textContent = "---";
+        cumulativeLowCountEl.textContent = "---";
+        cumulativeMediumCountEl.textContent = "---";
+        cumulativeSevereCountEl.textContent = "---";
+        videoFeed.src =
+          "https://placehold.co/1280x720/1f2937/FFFFFF?text=Connection+Lost";
+      });
+
+      // Handle new person alert
+      socket.on("new_person_alert", (data) => {
+        showAlert(data.category, data.area);
+        console.log("🚨 New person detected:", data);
+      });
+
+      // Initial check
+      if (!socket.connected) {
+        showStatus("Attempting to connect...", false);
+      }
+    </script>
+  </body>
+</html>
