@@ -43,7 +43,9 @@ cv2.setUseOptimized(True)  # Enable optimized code paths
 # - For webcam: 0 (default camera), 1 (second camera), etc.
 # - For video file: "path/to/video.mp4"
 VIDEO_SOURCE = 0 #"rtsp://localhost:8554/dji"  # DJI stream via MediaMTX (RTMP→RTSP conversion)
-YOLO_MODEL_PATH = r"E:\Sem-3\GeminiRoadProject\GeminiRoadProject\model\Human_detection.pt" # Human detection model
+# YOLO_MODEL_PATH = r"E:\Sem-3\GeminiRoadProject\GeminiRoadProject\model\Human_detection.pt" # Custom model (Git LFS)
+YOLO_MODEL_PATH = "yolo11n.pt"  # Use pretrained YOLOv11 nano model (auto-downloads, ~6MB)
+# Alternative options: "yolo11s.pt" (small, 22MB), "yolo11m.pt" (medium, 50MB), "yolo11l.pt" (large, 100MB)
 SERVER_URL = 'http://localhost:3000'
 DETECT_CLASSES = [0]  # Class IDs to detect: [0] = person only, None = all classes
 
