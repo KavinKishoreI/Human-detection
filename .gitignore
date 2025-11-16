@@ -17,9 +17,6 @@ venv/
 env/
 ENV/
 
-# Configuration files (auto-generated)
-config.py
-
 # IDE
 .vscode/
 .idea/
