@@ -18,14 +18,14 @@ Real-time GPU-accelerated human detection system for DJI drones using YOLOv11 an
 
 ## 📋 System Requirements
 
-| Component | Requirement |
-|-----------|------------|
-| **OS** | Windows 10/11 |
-| **Python** | 3.12+ |
-| **Node.js** | 16+ |
-| **GPU** | NVIDIA GPU with CUDA support |
-| **CUDA** | 12.4+ |
-| **RAM** | 8GB+ recommended |
+| Component   | Requirement                  |
+| ----------- | ---------------------------- |
+| **OS**      | Windows 10/11                |
+| **Python**  | 3.12+                        |
+| **Node.js** | 16+                          |
+| **GPU**     | NVIDIA GPU with CUDA support |
+| **CUDA**    | 12.4+                        |
+| **RAM**     | 8GB+ recommended             |
 
 ## 🚀 Quick Start
 
@@ -41,6 +41,7 @@ cd Human-detection
 MediaMTX is required for RTSP/RTMP streaming but not included in the repo (46 MB executable).
 
 **Download:**
+
 1. Visit [MediaMTX Releases](https://github.com/bluenviron/mediamtx/releases/tag/v1.15.2)
 2. Download `mediamtx_v1.15.2_windows_amd64.zip`
 3. Extract `mediamtx.exe` to the `rtsp/` folder
@@ -60,6 +61,7 @@ pip install -r requirements.txt
 ```
 
 **Key packages:**
+
 - `ultralytics` - YOLOv11 framework
 - `opencv-python` - Computer vision
 - `torch` - PyTorch with CUDA
@@ -72,6 +74,7 @@ npm install
 ```
 
 This installs:
+
 - `express` - Web server
 - `socket.io` - WebSocket communication
 
@@ -83,6 +86,7 @@ cd ..
 ```
 
 This PowerShell script launches all three components:
+
 1. **MediaMTX Server** (RTSP/RTMP on ports 8554, 1935)
 2. **Node.js Web Server** (Port 3000)
 3. **Python YOLO Analyzer** (Real-time detection)
@@ -107,28 +111,32 @@ python yolo_analyzer.py
 
 Once running, access these URLs:
 
-| Service | URL | Description |
-|---------|-----|-------------|
-| **Web Interface** | http://localhost:3000 | Live detection visualization |
-| **MediaMTX UI** | http://localhost:8888 | Stream management |
-| **RTSP Stream** | rtsp://localhost:8554/drone | Video stream endpoint |
+| Service           | URL                         | Description                  |
+| ----------------- | --------------------------- | ---------------------------- |
+| **Web Interface** | http://localhost:3000       | Live detection visualization |
+| **MediaMTX UI**   | http://localhost:8888       | Stream management            |
+| **RTSP Stream**   | rtsp://localhost:8554/drone | Video stream endpoint        |
 
 ## 🎮 Usage
 
 ### For DJI Drone Streaming
 
 1. **Configure your DJI drone** to stream RTMP to:
+
    ```
    rtmp://[YOUR_PC_IP]:1935/drone
    ```
 
 2. **Find your PC's IP address:**
+
    ```powershell
    ipconfig
    ```
+
    Look for "IPv4 Address" under your active network adapter.
 
 3. **Update drone settings** (varies by model):
+
    - DJI Fly app → Settings → Streaming
    - Enter RTMP URL with your PC's IP
    - Start streaming
@@ -138,6 +146,7 @@ Once running, access these URLs:
 ### For Webcam Testing
 
 Edit `Prototype/yolo_analyzer.py`:
+
 ```python
 VIDEO_SOURCE = 0  # Use default webcam (already set)
 ```
@@ -172,6 +181,7 @@ DETECT_CLASSES = [0]                # [0] = person only
 ### MediaMTX Settings (`rtsp/mediamtx.yml`)
 
 Already configured for DJI drones. Key settings:
+
 - RTSP port: 8554
 - RTMP port: 1935
 - HTTP API: 8888
@@ -180,15 +190,16 @@ Already configured for DJI drones. Key settings:
 
 Tested on **NVIDIA GeForce RTX 4050 Laptop GPU**:
 
-| Metric | Value |
-|--------|-------|
-| **FPS** | 18-31 |
-| **GPU Utilization** | 22-41% |
-| **Detection Confidence** | 0.4 threshold |
-| **Input Resolution** | 640×640 |
-| **Model Size** | 6 MB (yolo11n) |
+| Metric                   | Value          |
+| ------------------------ | -------------- |
+| **FPS**                  | 18-31          |
+| **GPU Utilization**      | 22-41%         |
+| **Detection Confidence** | 0.4 threshold  |
+| **Input Resolution**     | 640×640        |
+| **Model Size**           | 6 MB (yolo11n) |
 
 **Optimizations Enabled:**
+
 - ✅ TensorFloat-32 (TF32)
 - ✅ cuDNN benchmark mode
 - ✅ PyTorch model compilation
@@ -232,6 +243,7 @@ Monitor real-time GPU performance:
 ```
 
 Displays:
+
 - GPU utilization %
 - Memory usage
 - Temperature
@@ -240,6 +252,7 @@ Displays:
 ### Web Interface
 
 The web interface (http://localhost:3000) shows:
+
 - 📹 Live video stream with bounding boxes
 - 👥 Human count
 - ⏱️ Detection FPS
@@ -252,6 +265,7 @@ The web interface (http://localhost:3000) shows:
 ```
 Error: mediamtx.exe not found
 ```
+
 **Solution:** Download MediaMTX from the [releases page](https://github.com/bluenviron/mediamtx/releases/tag/v1.15.2) and place in `rtsp/` folder.
 
 ### GPU Not Detected
@@ -261,7 +275,9 @@ import torch
 print(torch.cuda.is_available())  # Should return True
 print(torch.cuda.get_device_name(0))
 ```
+
 **Solution:** Install PyTorch with CUDA support:
+
 ```bash
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
 ```
@@ -269,10 +285,12 @@ pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
 ### RTSP Connection Failed
 
 **Check MediaMTX is running:**
+
 - Visit http://localhost:8888
 - Should see MediaMTX web interface
 
 **Check port availability:**
+
 ```powershell
 netstat -an | findstr "8554"
 ```
@@ -323,4 +341,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ⭐ If you find this project useful, please consider giving it a star!
 
 Made with ❤️ for DJI drone enthusiasts and computer vision developers
-
