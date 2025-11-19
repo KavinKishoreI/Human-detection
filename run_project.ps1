@@ -9,12 +9,53 @@ Write-Host "   Human Detection System Launcher" -ForegroundColor Cyan
 Write-Host "===========================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Check if MediaMTX exists
+# Kill any stale Node.js processes from previous runs
+Write-Host "Checking for existing Node.js processes..." -ForegroundColor Gray
+$ExistingNode = Get-Process -Name node -ErrorAction SilentlyContinue | Where-Object {$_.Path -like "*GeminiRoadProject*"}
+if ($ExistingNode) {
+    Write-Host "Found existing Node.js process(es). Stopping..." -ForegroundColor Yellow
+    $ExistingNode | Stop-Process -Force
+    Start-Sleep -Seconds 1
+}
+
+# Kill any stale Python processes from previous runs
+$ExistingPython = Get-Process -Name python -ErrorAction SilentlyContinue | Where-Object {
+    $_.CommandLine -like "*yolo_analyzer.py*" -or $_.MainWindowTitle -like "*yolo_analyzer*"
+}
+if ($ExistingPython) {
+    Write-Host "Found existing Python process(es). Stopping..." -ForegroundColor Yellow
+    $ExistingPython | Stop-Process -Force
+    Start-Sleep -Seconds 1
+}
+
+# Check if MediaMTX exists and is valid (not a Git LFS pointer)
 $MediaMTXPath = Join-Path $ProjectRoot "rtsp\mediamtx.exe"
+$MediaMTXValid = $false
+
 if (-not (Test-Path $MediaMTXPath)) {
     Write-Host "WARNING: mediamtx.exe not found in rtsp\ folder!" -ForegroundColor Yellow
+} else {
+    # Check if it's a Git LFS pointer (small text file)
+    $FileSize = (Get-Item $MediaMTXPath).Length
+    if ($FileSize -lt 1000) {
+        $Content = Get-Content $MediaMTXPath -Raw -ErrorAction SilentlyContinue
+        if ($Content -match "git-lfs") {
+            Write-Host "WARNING: mediamtx.exe is a Git LFS pointer file (not downloaded)!" -ForegroundColor Yellow
+            Write-Host "To download with Git LFS:" -ForegroundColor Gray
+            Write-Host "  git lfs install" -ForegroundColor Cyan
+            Write-Host "  git lfs pull" -ForegroundColor Cyan
+        } else {
+            Write-Host "WARNING: mediamtx.exe is corrupted (only $FileSize bytes)!" -ForegroundColor Yellow
+        }
+    } else {
+        $MediaMTXValid = $true
+    }
+}
+
+if (-not $MediaMTXValid) {
     Write-Host "MediaMTX is only needed for DJI drone RTMP streaming." -ForegroundColor Gray
-    Write-Host "Download from: https://github.com/bluenviron/mediamtx/releases/tag/v1.15.2" -ForegroundColor Cyan
+    Write-Host "Download manually from: https://github.com/bluenviron/mediamtx/releases/tag/v1.15.2" -ForegroundColor Cyan
+    Write-Host "Extract mediamtx_v1.15.2_windows_amd64.tar.gz and place mediamtx.exe in rtsp\ folder" -ForegroundColor Cyan
     Write-Host ""
     $Continue = Read-Host "Continue without MediaMTX? (y/n)"
     if ($Continue -ne "y") {

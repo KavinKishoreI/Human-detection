@@ -2,6 +2,7 @@ import cv2
 import socketio
 import base64
 import numpy as np
+import os
 from ultralytics import YOLO
 import time
 import winsound  # For Windows alert sound
@@ -32,9 +33,22 @@ cv2.setUseOptimized(True)  # Enable optimized code paths
 
 # --- CONFIGURATION ---
 # VIDEO_SOURCE: Change this to your video source
-VIDEO_SOURCE = 0  # Webcam (default)
-# VIDEO_SOURCE = "rtsp://localhost:8554/drone"  # DJI Drone via MediaMTX
-# VIDEO_SOURCE = "rtsp://192.168.1.100:8554/live"  # Direct drone RTSP stream
+# You can override at runtime by setting the environment variable VIDEO_SOURCE
+# Examples:
+#   PowerShell: $env:VIDEO_SOURCE = "rtsp://10.35.38.198:8554/live"; python yolo_analyzer.py
+#   PowerShell webcam: $env:VIDEO_SOURCE = "0"; python yolo_analyzer.py
+VIDEO_SOURCE_ENV = os.environ.get('VIDEO_SOURCE')
+if VIDEO_SOURCE_ENV is not None:
+    try:
+        VIDEO_SOURCE = int(VIDEO_SOURCE_ENV)
+    except Exception:
+        VIDEO_SOURCE = VIDEO_SOURCE_ENV
+else:
+    # MediaMTX is connected to drone
+    VIDEO_SOURCE = "rtsp://localhost:8554/drone"
+
+# VIDEO_SOURCE = 0  # Webcam
+# VIDEO_SOURCE = "rtsp://localhost:8554/live"  # Alternative stream path
 # VIDEO_SOURCE = "path/to/video.mp4"  # Video file
 
 print(f"📹 Video Source: {VIDEO_SOURCE}")
@@ -284,28 +298,69 @@ except Exception as e:
 # --- VIDEO STREAM SETUP ---
 def initialize_stream():
     """Initializes the OpenCV video capture with stability settings."""
-    # Check if VIDEO_SOURCE is a string (RTSP/file) or integer (webcam)
+    # Helper to try opening with a specific backend
+    def try_open(src, backend=None):
+        try:
+            if backend is not None:
+                c = cv2.VideoCapture(src, backend)
+            else:
+                c = cv2.VideoCapture(src)
+            if c is not None and c.isOpened():
+                return c
+            try:
+                c.release()
+            except Exception:
+                pass
+        except Exception as e:
+            print(f"VideoCapture exception for backend {backend}: {e}")
+        return None
+
+    cap = None
+    # RTSP: try a few backends (FFMPEG, GStreamer, default)
     if isinstance(VIDEO_SOURCE, str) and VIDEO_SOURCE.startswith('rtsp'):
-        cap = cv2.VideoCapture(VIDEO_SOURCE, cv2.CAP_FFMPEG)
         print(f"Attempting to connect to RTSP stream: {VIDEO_SOURCE}")
+        backends = [cv2.CAP_FFMPEG, cv2.CAP_GSTREAMER, None]
+        for b in backends:
+            cap = try_open(VIDEO_SOURCE, b)
+            if cap:
+                print(f"Opened RTSP using backend: {b if b is not None else 'default'}")
+                break
+
+        if cap is None:
+            print("STREAM ERROR: All RTSP backends failed to open the stream.")
+            print("If this is a local MediaMTX stream, ensure mediamtx.exe is running (see run_project.ps1).")
+            print("You can test connectivity with PowerShell: Test-NetConnection -ComputerName <IP> -Port 8554")
+            # Try fallback to webcam 0
+            print("Attempting fallback to local webcam (0)...")
+            cap = try_open(0)
+
     elif isinstance(VIDEO_SOURCE, int):
-        cap = cv2.VideoCapture(VIDEO_SOURCE)
+        cap = try_open(VIDEO_SOURCE)
         print(f"Attempting to open webcam {VIDEO_SOURCE}...")
     else:
-        cap = cv2.VideoCapture(VIDEO_SOURCE)
+        cap = try_open(VIDEO_SOURCE)
         print(f"Attempting to open video file: {VIDEO_SOURCE}")
-    
-    if cap.isOpened():
-        cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)  # Minimal buffering for low latency
+
+    if cap is not None and cap.isOpened():
+        try:
+            cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)  # Minimal buffering for low latency
+        except Exception:
+            pass
         if isinstance(VIDEO_SOURCE, str) and VIDEO_SOURCE.startswith('rtsp'):
-            cap.set(cv2.CAP_PROP_FPS, 30)  # Request higher FPS from stream
+            try:
+                cap.set(cv2.CAP_PROP_FPS, 30)
+            except Exception:
+                pass
         elif isinstance(VIDEO_SOURCE, int):
-            cap.set(cv2.CAP_PROP_FPS, 30)  # Request 30 FPS from webcam
-            cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)  # Set higher resolution
-            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+            try:
+                cap.set(cv2.CAP_PROP_FPS, 30)  # Request 30 FPS from webcam
+                cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)  # Set higher resolution
+                cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+            except Exception:
+                pass
         print(f"Video source opened successfully: {VIDEO_SOURCE}")
         return cap
-    
+
     print(f"STREAM ERROR: Failed to open video source: {VIDEO_SOURCE}")
     return None
 

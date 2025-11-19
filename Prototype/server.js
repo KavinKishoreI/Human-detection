@@ -1,6 +1,6 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
+const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
@@ -9,26 +9,46 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "*", // Allow all origins for local testing
-    methods: ["GET", "POST"]
-  }
+    methods: ["GET", "POST"],
+  },
 });
 
 // Serve HTML page from the current directory
 app.use(express.static("public"));
 
-io.on('connection', (socket) => {
-  console.log('Client connected');
+io.on("connection", (socket) => {
+  console.log("Client connected");
 
-  socket.on('detection_data', (data) => {
-    if (data && data.frame && data.frame.length > 1000) { 
-      io.emit('detection_data', data);
+  socket.on("detection_data", (data) => {
+    if (data && data.frame && data.frame.length > 1000) {
+      io.emit("detection_data", data);
     }
   });
 
-  socket.on('disconnect', () => {
-    console.log('Client disconnected');
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
   });
 });
 
-const PORT = 3000;
-server.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+const PORT = process.env.PORT || 3000;
+
+// Handle port already in use error
+server.on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    console.error(`\n❌ ERROR: Port ${PORT} is already in use!`);
+    console.error("To fix this:");
+    console.error(
+      '  1. Kill existing process: Get-Process -Name node | Where-Object {$_.Path -like "*GeminiRoadProject*"} | Stop-Process -Force'
+    );
+    console.error(
+      "  2. Or use different port: $env:PORT = 3001; node server.js"
+    );
+    process.exit(1);
+  } else {
+    throw err;
+  }
+});
+
+server.listen(PORT, () => {
+  console.log(`✅ Server running at http://localhost:${PORT}`);
+});
