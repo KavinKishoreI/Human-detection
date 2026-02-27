@@ -4,8 +4,8 @@
 
 ### Your Network Information
 
-- **Computer IP Address**: `10.185.135.198` or `192.168.56.1`
-- **RTMP Server**: `rtmp://10.185.135.198:1935/dji`
+- **Computer IP Address**: `10.23.143.198` or `192.168.56.1`
+- **RTMP Server**: `rtmp://10.23.143.198:1935/dji`
 - **RTSP Output**: `rtsp://localhost:8554/dji`
 
 ---
@@ -35,7 +35,6 @@
 #### Option A: RTMP Streaming (Recommended)
 
 1. **In DJI Fly App:**
-
    - Tap the **three dots (⋮)** in the top-right corner
    - Go to **Settings** → **Transmission Settings** or **Live Streaming**
    - Select **Custom RTMP**
@@ -43,14 +42,13 @@
 2. **Enter Stream Details:**
 
    ```
-   RTMP URL: rtmp://10.185.135.198:1935/dji
+   RTMP URL: rtmp://10.23.143.198:1935/dji
    Stream Key: (leave empty or use "live")
    ```
 
-   > **Note:** Replace `10.185.135.198` with your computer's IP if different
+   > **Note:** Replace `10.23.143.198` with your computer's IP if different
 
 3. **Quality Settings:**
-
    - Resolution: **1080p** or **720p** (4K may be too bandwidth-heavy)
    - Bitrate: **4-6 Mbps** for 1080p
    - Frame Rate: **30 FPS**
@@ -66,7 +64,6 @@
 Some DJI drones support direct RTSP output:
 
 1. **Check if your drone supports RTSP:**
-
    - DJI Mini 3 Pro, Air 3, Mavic 3 series usually have this
    - Look for **RTSP** option in Live Streaming settings
 
@@ -160,7 +157,6 @@ Some DJI drones support direct RTSP output:
    ```
 
 2. Python analyzer is connected:
-
    - Look for: "Video source opened successfully: rtsp://localhost:8554/dji"
 
 3. Restart all servers if needed
@@ -248,7 +244,7 @@ If you encounter issues:
 
 **Your Computer IPs:**
 
-- `10.185.135.198` (likely your WiFi)
+- `10.23.143.198` (likely your WiFi)
 - `192.168.56.1` (VirtualBox network)
 
-**Use the WiFi IP (`10.185.135.198`) for DJI streaming!**
+**Use the WiFi IP (`10.23.143.198`) for DJI streaming!**

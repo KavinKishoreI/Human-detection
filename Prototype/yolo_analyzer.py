@@ -35,7 +35,7 @@ cv2.setUseOptimized(True)  # Enable optimized code paths
 # VIDEO_SOURCE: Change this to your video source
 # You can override at runtime by setting the environment variable VIDEO_SOURCE
 # Examples:
-#   PowerShell: $env:VIDEO_SOURCE = "rtsp://10.35.38.198:8554/live"; python yolo_analyzer.py
+#   PowerShell: $env:VIDEO_SOURCE = "rtsp://10.23.143.198:8554/dji"; python yolo_analyzer.py
 #   PowerShell webcam: $env:VIDEO_SOURCE = "0"; python yolo_analyzer.py
 VIDEO_SOURCE_ENV = os.environ.get('VIDEO_SOURCE')
 if VIDEO_SOURCE_ENV is not None:
@@ -45,7 +45,7 @@ if VIDEO_SOURCE_ENV is not None:
         VIDEO_SOURCE = VIDEO_SOURCE_ENV
 else:
     # MediaMTX is connected to drone
-    VIDEO_SOURCE = "rtsp://localhost:8554/drone"
+    VIDEO_SOURCE = "rtsp://localhost:8554/dji"
 
 # VIDEO_SOURCE = 0  # Webcam
 # VIDEO_SOURCE = "rtsp://localhost:8554/live"  # Alternative stream path
@@ -330,9 +330,7 @@ def initialize_stream():
             print("STREAM ERROR: All RTSP backends failed to open the stream.")
             print("If this is a local MediaMTX stream, ensure mediamtx.exe is running (see run_project.ps1).")
             print("You can test connectivity with PowerShell: Test-NetConnection -ComputerName <IP> -Port 8554")
-            # Try fallback to webcam 0
-            print("Attempting fallback to local webcam (0)...")
-            cap = try_open(0)
+            print("No fallback will be used for RTSP source. Exiting so stream path/config can be corrected.")
 
     elif isinstance(VIDEO_SOURCE, int):
         cap = try_open(VIDEO_SOURCE)

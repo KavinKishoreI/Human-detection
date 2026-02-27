@@ -92,12 +92,22 @@ Start-Process powershell -ArgumentList @(
 
 Start-Sleep -Seconds 3
 
+# Select Python interpreter with project dependencies (prefer Python 3.13)
+$PreferredPython = "C:\Users\kavin\AppData\Local\Programs\Python\Python313\python.exe"
+if (Test-Path $PreferredPython) {
+    $PythonCommand = "`"$PreferredPython`""
+} elseif (Get-Command py -ErrorAction SilentlyContinue) {
+    $PythonCommand = "py -3.13"
+} else {
+    $PythonCommand = "python"
+}
+
 # 3. Start Python YOLO Analyzer
 Write-Host "Starting Python YOLO Analyzer..." -ForegroundColor Green
 Start-Process powershell -ArgumentList @(
     "-NoExit",
     "-Command",
-    "Set-Location '$ProjectRoot\Prototype'; Write-Host 'Python YOLO Analyzer Starting...' -ForegroundColor Cyan; python yolo_analyzer.py"
+    "Set-Location '$ProjectRoot\Prototype'; Write-Host 'Python YOLO Analyzer Starting...' -ForegroundColor Cyan; $PythonCommand yolo_analyzer.py"
 ) -WindowStyle Normal
 
 Start-Sleep -Seconds 2
@@ -108,7 +118,7 @@ Write-Host ""
 Write-Host "Web Interface:    http://localhost:3000" -ForegroundColor Yellow
 if ($StartMediaMTX) {
     Write-Host "MediaMTX UI:      http://localhost:8888" -ForegroundColor Yellow
-    Write-Host "RTSP Stream:      rtsp://localhost:8554/drone" -ForegroundColor Yellow
+    Write-Host "RTSP Stream:      rtsp://localhost:8554/dji" -ForegroundColor Yellow
 }
 Write-Host ""
 Write-Host "Press Ctrl+C in each window to stop the servers" -ForegroundColor Gray

@@ -1,8 +1,8 @@
 # RTSP Connection Troubleshooting Script
 param(
-    [string]$IP = "10.35.38.198",
+    [string]$IP = "10.23.143.198",
     [int]$Port = 8554,
-    [string]$StreamPath = "live"
+    [string]$StreamPath = "dji"
 )
 
 Write-Host "========================================" -ForegroundColor Cyan

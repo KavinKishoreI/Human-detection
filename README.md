@@ -111,11 +111,11 @@ python yolo_analyzer.py
 
 Once running, access these URLs:
 
-| Service           | URL                         | Description                  |
-| ----------------- | --------------------------- | ---------------------------- |
-| **Web Interface** | http://localhost:3000       | Live detection visualization |
-| **MediaMTX UI**   | http://localhost:8888       | Stream management            |
-| **RTSP Stream**   | rtsp://localhost:8554/drone | Video stream endpoint        |
+| Service           | URL                       | Description                  |
+| ----------------- | ------------------------- | ---------------------------- |
+| **Web Interface** | http://localhost:3000     | Live detection visualization |
+| **MediaMTX UI**   | http://localhost:8888     | Stream management            |
+| **RTSP Stream**   | rtsp://localhost:8554/dji | Video stream endpoint        |
 
 ## 🎮 Usage
 
@@ -124,7 +124,7 @@ Once running, access these URLs:
 1. **Configure your DJI drone** to stream RTMP to:
 
    ```
-   rtmp://[YOUR_PC_IP]:1935/drone
+   rtmp://[YOUR_PC_IP]:1935/dji
    ```
 
 2. **Find your PC's IP address:**
@@ -136,7 +136,6 @@ Once running, access these URLs:
    Look for "IPv4 Address" under your active network adapter.
 
 3. **Update drone settings** (varies by model):
-
    - DJI Fly app → Settings → Streaming
    - Enter RTMP URL with your PC's IP
    - Start streaming
@@ -164,7 +163,7 @@ VIDEO_SOURCE = "path/to/your/video.mp4"
 ```python
 # Video source options
 VIDEO_SOURCE = 0                    # Webcam
-# VIDEO_SOURCE = "rtsp://localhost:8554/drone"  # DJI via MediaMTX
+# VIDEO_SOURCE = "rtsp://localhost:8554/dji"  # DJI via MediaMTX
 # VIDEO_SOURCE = "video.mp4"        # Video file
 
 # YOLO model (auto-downloads on first run)
@@ -299,8 +298,8 @@ netstat -an | findstr "8554"
 
 1. Ensure PC and drone are on the same network
 2. Check firewall isn't blocking ports 1935, 8554
-3. Verify RTMP URL format: `rtmp://[PC_IP]:1935/drone`
-4. Test with VLC player first: `rtsp://localhost:8554/drone`
+3. Verify RTMP URL format: `rtmp://[PC_IP]:1935/dji`
+4. Test with VLC player first: `rtsp://localhost:8554/dji`
 
 ## 🎓 Learning Resources
 
